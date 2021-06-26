@@ -100,7 +100,7 @@ def remove_boundaries(img,floodfill_count=2):
     if w*h<0.05*50*50:
         return np.zeros([h,w])
     
-    image_shrunk=image_shrunk[y:y+h,x:x+w ]
+    image_shrunk=image_shrunk[y-1:y+h+1,x-1:x+w+1]
    
     return image_shrunk
 
