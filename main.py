@@ -7,12 +7,19 @@ from image_processing import image_procesor,sudoku_finder,grid_cropper
 from digit_recognition import image_to_digits
 from sudoku_solver import solve
 import sys
+import time
+import shutil
+
 # adding the path of the file
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p","--path",type=str,help="Path of input sudoku file")
 parser.add_argument("-d","--debug",action="store_true",help="Shows output at each step")
 args = parser.parse_args()
+
+def isdebug():
+    global args
+    return args.debug
 
 try:
     model = keras.models.load_model('big_epoch.h5')
@@ -24,6 +31,11 @@ if args.debug:
     # detect the current working directory and print it
     path = os.getcwd()
     os.makedirs(path+"/Debug/Numbers",exist_ok=True)
+    shutil.rmtree(path+"/Debug/NN",ignore_errors=True)
+    os.makedirs(path+"/Debug/NN",exist_ok=True)
+
+
+start = time.time()
 
 image_input=cv2.imread(args.path,0)
 if image_input is None:
@@ -51,7 +63,7 @@ if args.debug:
         for j in range(9):
             cv2.imwrite(path+"/Debug/Numbers/grid_"+str(i)+str(j)+".png",Squares[i*9+j])
 
-grid_numbers=image_to_digits(Squares,model)
+grid_numbers=image_to_digits(Squares,model,args.debug)
 
 
 if args.debug:
@@ -62,5 +74,7 @@ solved_sudoku=solve(grid_numbers)
 
 
 if args.debug:
-
     print(np.matrix(solved_sudoku))
+
+end=time.time()
+print("TIME TAKEN TO PROCESS: ",end-start)

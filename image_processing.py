@@ -3,17 +3,20 @@ import numpy as np
 import operator
 import sys
 
+
+
 def image_procesor(image):
-    processing_image=cv2.GaussianBlur(image,(9,9),0)
-    processing_image=cv2.adaptiveThreshold(processing_image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+
+    processing_image_dilated=cv2.GaussianBlur(image,(9,9),0)
+    processing_image_dilated=cv2.adaptiveThreshold(processing_image_dilated,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
     cv2.THRESH_BINARY,11,2)#
 
-    processing_image=cv2.bitwise_not(processing_image,processing_image)
+    processing_image_dilated=cv2.bitwise_not(processing_image_dilated,processing_image_dilated)
 
     kernel = np.array([[0., 1., 0.], [1., 1., 1.], [0., 1., 0.]],np.uint8)
-    processing_image_dilated = cv2.dilate(processing_image, kernel)
+    processing_image_dilated = cv2.dilate(processing_image_dilated, kernel)
 
-    return processing_image_dilated,processing_image
+    return processing_image_dilated,image
 
 def sudoku_finder(processing_image_dilated,processing_image):
     contours,_ = cv2.findContours(processing_image_dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -53,7 +56,7 @@ def sudoku_finder(processing_image_dilated,processing_image):
     ordered_corners = np.array(ordered_corners, dtype="float32")
 
     grid_size = cv2.getPerspectiveTransform(ordered_corners, dimensions)
-    grid_image = cv2.warpPerspective(processing_image, grid_size, (side, side),flags=cv2.INTER_NEAREST)
+    grid_image = cv2.warpPerspective(processing_image, grid_size, (side, side),flags=cv2.INTER_AREA)
 
     return grid_image
 
@@ -70,8 +73,9 @@ def remove_boundaries(img,floodfill_count=2):
     Handle=True
     # Get image shape
     h, w = img.shape
-    image_shrunk = cv2.resize(img, (50, 50),interpolation = cv2.INTER_NEAREST)
-    image_copy=image_shrunk.copy()
+    image_shrunk = cv2.resize(img, (50, 50),interpolation = cv2.INTER_AREA)
+    image_shrunk,image_copy=image_procesor(image_shrunk)
+    image_copy_ig=image_shrunk.copy()
     rows=image_shrunk.shape[0]
     if floodfill_count>=1:
         for i in range(rows):
@@ -88,21 +92,21 @@ def remove_boundaries(img,floodfill_count=2):
                 cv2.floodFill(image_shrunk, None, (i, rows - 2), 0)
             #Floodfilling the second outermost layer
         
-        if np.sum(crop_img(image_copy,0.3))>(255*0.3*0.3*rows*rows*0.09) and np.sum(crop_img(image_shrunk,0.3))<(255*0.3*0.3*rows*rows*0.04):
+        if np.sum(crop_img(image_copy_ig,0.3))>(255*0.3*0.3*rows*rows*0.09) and np.sum(crop_img(image_shrunk,0.3))<(255*0.3*0.3*rows*rows*0.04):
             return remove_boundaries(img,floodfill_count-1)
 
     contours,_ = cv2.findContours(image_shrunk, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
 
     if len(contours)==0:
-        return np.zeros([h,w])
+        return np.ones([h,w])*255
     x,y,w,h = cv2.boundingRect(contours[0])
     if w*h<0.05*50*50:
-        return np.zeros([h,w])
+        return np.ones([h,w])*255
     
-    image_shrunk=image_shrunk[y-1:y+h+1,x-1:x+w+1]
+    image_copy=image_copy[y-1:y+h+1,x-1:x+w+1]
    
-    return image_shrunk
+    return image_copy
 
 
 # def remove_boundaries(img):

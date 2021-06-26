@@ -31,10 +31,10 @@ def solver_actual():
 
                 return
     print(np.matrix(grid))
-    sys.exit(" -- Sudoku solved -- ")
+    sys.exit(" -- Sudoku solved -- ") 
 
 def solve(grid_to_solve):
     global grid
     grid= grid_to_solve
-    grid=solver_actual()
+    solver_actual()
     return grid
