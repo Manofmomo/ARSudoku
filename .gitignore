@@ -2,3 +2,4 @@ Debug/**
 training_data/**
 testing_data/**
 __pycache__/**
+fonts/**
