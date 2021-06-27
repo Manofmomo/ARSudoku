@@ -20,9 +20,9 @@ def image_to_digits(grid,model,debug):
 
             image=image.reshape(1,28,28,1)
             pred=np.array(model.predict(image))
-            print(pred[0])
+            # print(pred[0])
             index=np.argmax(pred[0])
-            print(pred[0][index])
+            # print(pre/d[0][index])
 
             if pred[0][index]>0.8:
                 grid_numbers[i][j]=index+1
