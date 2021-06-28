@@ -4,6 +4,7 @@ import os
 import numpy as np
 from tensorflow import keras
 from image_processing import image_procesor,sudoku_finder,grid_cropper
+from image_processing import write_grid
 from digit_recognition import image_to_digits
 from sudoku_solver import solve
 import sys
@@ -76,5 +77,12 @@ solved_sudoku=solve(grid_numbers)
 if args.debug:
     print(np.matrix(solved_sudoku))
 
+solved_sudoku=solved_sudoku-grid_numbers
 end=time.time()
+
+solved_sudoku_image=write_grid(solved_sudoku,Sudoku_image)
+
+if args.debug:
+    cv2.imwrite(path+"/Debug/solved_sudoku.png",solved_sudoku_image)
+
 print("TIME TAKEN TO PROCESS: ",end-start)

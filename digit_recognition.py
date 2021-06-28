@@ -4,7 +4,7 @@ import cv2
 from image_processing import image_procesor
 
 def image_to_digits(grid,model,debug):
-    grid_numbers=np.zeros([9,9])
+    grid_numbers=np.zeros([9,9],dtype=int)
     for i in range(9):
         for j in range(9):
             image=grid[i*9+j]

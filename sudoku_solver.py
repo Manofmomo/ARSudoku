@@ -18,23 +18,38 @@ def number_checker(row,column,n):
 
     return True
 
+def find_empty():
+    for i in range(9):
+        for j in range(9):
+            if grid[i][j]==0:
+                return (i,j)
+    return None
+
 def solver_actual():
     global grid
-    for i in range(0,9):
-        for j in range(0,9):
-            if grid[i][j]==0:
-                for k in range(1,10):
-                    if number_checker(i,j,k):
-                        grid[i][j]=k
-                        solver_actual()
-                        grid[i][j]=0
+    indexs = find_empty()
+    if not indexs:
+        return True
+    
+    i,j=indexs
+    for k in range(1,10):
+        if number_checker(i,j,k):
+            grid[i][j]=k
+            if solver_actual():
+                return True
+            grid[i][j]=0
 
-                return
-    print(np.matrix(grid))
-    sys.exit(" -- Sudoku solved -- ") 
+    return False
 
 def solve(grid_to_solve):
     global grid
-    grid= grid_to_solve
-    solver_actual()
-    return grid
+    grid= grid_to_solve.copy()
+    if (solver_actual()):
+        return grid
+    else:
+        return np.zeros([9,9])
+
+#%% 
+
+
+# %%

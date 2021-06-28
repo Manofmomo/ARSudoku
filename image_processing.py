@@ -91,8 +91,8 @@ def remove_boundaries(img,floodfill_count=2):
                 cv2.floodFill(image_shrunk, None, (rows - 2, i), 0)
                 cv2.floodFill(image_shrunk, None, (i, rows - 2), 0)
             #Floodfilling the second outermost layer
-        
-        if np.sum(crop_img(image_copy_ig,0.3))>(255*0.3*0.3*rows*rows*0.09) and np.sum(crop_img(image_shrunk,0.3))<(255*0.3*0.3*rows*rows*0.04):
+        crop_rate=0.4
+        if np.sum(crop_img(image_copy_ig,crop_rate))>(255*crop_rate*crop_rate*rows*rows*0.04) and np.sum(crop_img(image_shrunk,crop_rate))<(255*crop_rate*crop_rate*rows*rows*0.04):
             return remove_boundaries(img,floodfill_count-1)
 
     contours,_ = cv2.findContours(image_shrunk, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -157,3 +157,20 @@ def grid_cropper(Sudoku_image): #function that is actually called
             squares.append(cut_square)
 
     return squares
+
+def write_grid(solved_sudoku,Sudoku_image):
+    side_dim = np.shape(Sudoku_image)[0]
+    side_dim = side_dim // 9
+    side_dim = side_dim
+    offset_right=side_dim//4
+    offset_up=side_dim//5
+
+    scale = 0.4 # this value can be from 0 to 1 (0,1] to change the size of the text relative to the image
+    fontScale = side_dim/(25/scale)
+    for i in range(9):
+        for j in range(9):
+            
+            if solved_sudoku[i][j]!=0.0:
+                Sudoku_image=cv2.putText(Sudoku_image,str(solved_sudoku[i][j]),((j) * side_dim+offset_right, (i+1) * side_dim-offset_up),0,fontScale, (0, 255, 0),thickness=3  )
+
+    return Sudoku_image
