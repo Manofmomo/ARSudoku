@@ -7,6 +7,7 @@ from image_processing import image_procesor,sudoku_finder,grid_cropper
 from image_processing import write_grid
 from digit_recognition import image_to_digits
 from sudoku_solver import solve
+from Webcam_capture import get_frame
 import sys
 import time
 import shutil
@@ -37,10 +38,14 @@ if args.debug:
 
 
 start = time.time()
-
-image_input=cv2.imread(args.path,0)
-if image_input is None:
-    sys.exit(" -- Provided path has no image file to read -- ")
+if args.path:
+    image_input=cv2.imread(args.path,0)
+    if image_input is None:
+        sys.exit(" -- Provided path has no image file to read -- ")
+else:
+    image_input=get_frame()
+    if image_input is None:
+        sys.exit(" -- Image Was not captured, Exiting... -- ")
 
 image_copy=image_input.copy()
 
@@ -83,6 +88,8 @@ end=time.time()
 solved_sudoku_image=write_grid(solved_sudoku,Sudoku_image)
 
 if args.debug:
+    print("TIME TAKEN TO PROCESS: ",end-start)
     cv2.imwrite(path+"/Debug/solved_sudoku.png",solved_sudoku_image)
-
-print("TIME TAKEN TO PROCESS: ",end-start)
+cv2.imshow("Solved Sudoku", solved_sudoku_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
