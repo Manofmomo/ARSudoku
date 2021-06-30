@@ -12,6 +12,7 @@ def image_to_digits(grid,model,debug):
                 grid_numbers[i][j]=0
                 continue
 
+
             image = cv2.resize(image, (28, 28),interpolation = cv2.INTER_AREA)
             image,_=image_procesor(image)
 

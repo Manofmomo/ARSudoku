@@ -44,8 +44,11 @@ if args.path:
         sys.exit(" -- Provided path has no image file to read -- ")
 else:
     image_input=get_frame()
+
     if image_input is None:
         sys.exit(" -- Image Was not captured, Exiting... -- ")
+    image_input = cv2.cvtColor(image_input, cv2.COLOR_BGR2GRAY)
+
 
 image_copy=image_input.copy()
 
@@ -91,5 +94,7 @@ if args.debug:
     print("TIME TAKEN TO PROCESS: ",end-start)
     cv2.imwrite(path+"/Debug/solved_sudoku.png",solved_sudoku_image)
 cv2.imshow("Solved Sudoku", solved_sudoku_image)
-cv2.waitKey(0)
+while cv2.getWindowProperty("Solved Sudoku", 0) >= 0:
+    keyCode = cv2.waitKey(50)
+    # ...
 cv2.destroyAllWindows()

@@ -105,7 +105,11 @@ def remove_boundaries(img,floodfill_count=2):
         return np.ones([h,w])*255
     
     image_copy=image_copy[y-1:y+h+1,x-1:x+w+1]
-   
+    h, w = img.shape
+
+    if np.sum(image_copy)<10*h*w:
+        return np.ones([h,w])*255
+
     return image_copy
 
 
